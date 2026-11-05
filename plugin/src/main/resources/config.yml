@@ -46,3 +46,8 @@ changes:
     day: 0
     effects:
       - { type: POTION, effect: slowness, amplifier: 0, seconds: 600 }
+
+        animation:
+    spin-steps: 24
+    start-delay-ticks: 2
+    end-delay-ticks: 14
