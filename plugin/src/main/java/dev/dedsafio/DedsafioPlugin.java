@@ -53,8 +53,11 @@ public final class DedsafioPlugin extends JavaPlugin implements Listener {
     public void onJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         scores.attach(p);
-        if (game.isRunning() && !scores.get(p).alive) {
+        ScoreManager.Stats st = scores.get(p);
+        if (game.isRunning() && !st.alive) {
             Bukkit.getScheduler().runTask(this, () -> deaths.applyDeadState(p));
+        } else if (st.pendingRevive) {
+            Bukkit.getScheduler().runTask(this, () -> deaths.applyRevivedState(p));
         }
     }
 

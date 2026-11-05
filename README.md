@@ -8,7 +8,7 @@ INSTRUCCIONES_PROYECTO.md   → texto para pegar en las instrucciones de un Proy
 docs/INVESTIGACION.md       → qué es Dedsafio, mecánicas, mods existentes, fuentes
 docs/ARQUITECTURA.md        → decisiones técnicas y módulos
 docs/ROADMAP.md             → fases con checklist
-plugin/                     → plugin Paper (Java 21 + Gradle) con el núcleo
+plugin/                     → plugin Paper (Java 25 + Gradle 9.1+) con el núcleo
 server/                     → docker-compose, scripts de arranque, server.properties
 resourcepack/               → esqueleto de resource pack (pon tus propios assets)
 ```
@@ -21,7 +21,7 @@ resourcepack/               → esqueleto de resource pack (pon tus propios asse
 - Anuncio de instrucciones en pantalla.
 
 ## Arranque rápido
-Requisitos: JDK 21, Gradle 8+ (o genera el wrapper con `gradle wrapper`), Docker.
+Requisitos: JDK 25, Gradle 9.1+ (o genera el wrapper con `gradle wrapper`), Docker.
 
 ```bash
 # 1. Compilar el plugin
@@ -64,3 +64,7 @@ Sin Docker: descarga Paper desde https://papermc.io/downloads/paper, renómbralo
 
 ## Siguiente paso
 Abre `docs/ROADMAP.md` y sigue la Fase 1. Para trabajar con Claude, pega `INSTRUCCIONES_PROYECTO.md` en un Proyecto y sube esta carpeta como conocimiento.
+
+## Versión objetivo
+Paper **26.3** (Minecraft Java 26.3), **Java 25**, Gradle **9.1+**. El `pack_format` de `resourcepack/pack.mcmeta`
+sigue siendo el de 1.21.4: compruébalo para 26.3 antes de publicar el pack. Despliegue en Proxmox: `docs/PROXMOX.md`.

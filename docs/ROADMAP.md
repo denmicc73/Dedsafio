@@ -1,9 +1,17 @@
 # Roadmap de desarrollo
 
 ## Fase 0 — Preparación (1-2 días)
-- [ ] Instalar JDK 21, Gradle (o usar el wrapper), IntelliJ IDEA, Docker.
+- [ ] Instalar JDK 25, Gradle 9.1+ (o usar el wrapper), IntelliJ IDEA, Docker.
 - [ ] Definir con tus propias palabras el "diseño del evento": nº de jugadores, duración (días), hermandades, reglas de muerte.
 - [ ] Ver VODs de DEDsafio 2/3/4 y anotar: ruleta por día, gulags, jefes, normas. Rellenar una hoja con esos datos.
+
+## Fase 0.5 — Migración a Paper 26.3 (hecha en código, sin compilar)
+- [x] `build.gradle.kts`: `paper-api:26.3.build.+`, Java 25 (requiere Gradle 9.1+).
+- [x] `plugin.yml` `api-version: '26.3'`, docker-compose (`java25`, `VERSION 26.3`).
+- [x] Corregidos: `e.getEntity()` en muerte, revivir a jugadores desconectados (`pendingRevive`),
+      marcador sin parpadeo, cambio de hermandad.
+- [x] Guía de despliegue offline en `docs/PROXMOX.md` + servicio systemd en `server/systemd/`.
+- [ ] Verificar `api-version`, `GameRule.getByName` y `pack_format` del resource pack en 26.3.
 
 ## Fase 1 — Núcleo (incluido en este proyecto)
 - [ ] Compilar el plugin: `cd plugin && gradle build`

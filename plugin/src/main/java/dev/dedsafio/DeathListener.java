@@ -39,7 +39,7 @@ public final class DeathListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onDeath(PlayerDeathEvent e) {
         if (!plugin.game().isRunning()) return;
-        Player p = e.getPlayer();
+        Player p = e.getEntity();
         ScoreManager.Stats s = plugin.scores().get(p);
         if (!s.alive) return;
 
@@ -109,11 +109,23 @@ public final class DeathListener implements Listener {
 
         Player p = Bukkit.getPlayer(id);
         if (p != null) {
-            Location loc = p.getRespawnLocation();
-            if (loc == null) loc = Bukkit.getWorlds().get(0).getSpawnLocation();
-            p.setGameMode(GameMode.SURVIVAL);
-            p.teleport(loc);
-            p.sendMessage(Component.text("Has vuelto a la vida.", NamedTextColor.GREEN));
+            applyRevivedState(p);
+        } else {
+            // Desconectado: se aplica al volver a entrar (ver DedsafioPlugin.onJoin)
+            s.pendingRevive = true;
+            plugin.scores().save();
         }
+    }
+
+    /** Devuelve a un jugador revivido a modo supervivencia en el spawn. */
+    public void applyRevivedState(Player p) {
+        ScoreManager.Stats s = plugin.scores().get(p);
+        s.pendingRevive = false;
+        Location loc = p.getRespawnLocation();
+        if (loc == null) loc = Bukkit.getWorlds().get(0).getSpawnLocation();
+        p.setGameMode(GameMode.SURVIVAL);
+        p.teleport(loc);
+        p.sendMessage(Component.text("Has vuelto a la vida.", NamedTextColor.GREEN));
+        plugin.scores().save();
     }
 }

@@ -58,7 +58,7 @@ Para añadir uno nuevo: método `apply()` en `RouletteManager` (efectos puntuale
 
 ## Infraestructura
 - Desarrollo: `docker compose up` (carpeta `server/`).
-- Producción: VPS/dedicado con Java 21, ≥ 8 GB RAM para ~40-60 jugadores (ajusta con spark); 100 jugadores requiere más y optimizar (view-distance, entidades).
+- Producción: VPS/dedicado con Java 25, ≥ 8 GB RAM para ~40-60 jugadores (ajusta con spark); 100 jugadores requiere más y optimizar (view-distance, entidades).
 - Backups automáticos del mundo cada X horas; `data.yml` incluido.
 - Whitelist obligatoria; anti-grief y límites de entidades.
 - Para muchos jugadores concurrentes valora un proxy (Velocity) solo si necesitas varios servidores; empieza sin él.

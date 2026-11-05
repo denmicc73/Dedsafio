@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Arranque manual de Paper (Linux/macOS). Requiere Java 21.
+# Arranque manual de Paper (Linux/macOS). Requiere Java 25.
 # Descarga paper-<version>.jar desde https://papermc.io/downloads/paper
 RAM="${RAM:-4G}"
 exec java -Xms"$RAM" -Xmx"$RAM" \

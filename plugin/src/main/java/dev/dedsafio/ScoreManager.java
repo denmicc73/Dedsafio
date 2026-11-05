@@ -29,6 +29,7 @@ public final class ScoreManager {
         public int totems;
         public int days;
         public boolean alive = true;
+        public boolean pendingRevive;
         public String brotherhood;
     }
 
@@ -55,6 +56,7 @@ public final class ScoreManager {
             st.totems = s.getInt("totems");
             st.days = s.getInt("days");
             st.alive = s.getBoolean("alive", true);
+            st.pendingRevive = s.getBoolean("pendingRevive", false);
             st.brotherhood = s.getString("brotherhood");
             stats.put(UUID.fromString(key), st);
         }
@@ -73,6 +75,7 @@ public final class ScoreManager {
             y.set(p + ".totems", s.totems);
             y.set(p + ".days", s.days);
             y.set(p + ".alive", s.alive);
+            y.set(p + ".pendingRevive", s.pendingRevive);
             y.set(p + ".brotherhood", s.brotherhood);
         }
         plugin.store().save();
@@ -121,27 +124,48 @@ public final class ScoreManager {
         refresh();
     }
 
-    public void refresh() {
-        Objective old = board.getObjective("dedsafio");
-        if (old != null) old.unregister();
-        Objective obj = board.registerNewObjective("dedsafio", Criteria.DUMMY,
-                Component.text("DEDSAFIO", NamedTextColor.RED, TextDecoration.BOLD));
-        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+    /** Entradas que ahora mismo aparecen en el marcador lateral. */
+    private final java.util.Set<String> shown = new java.util.HashSet<>();
 
-        stats.values().stream()
+    public void refresh() {
+        Objective obj = board.getObjective("dedsafio");
+        if (obj == null) {
+            obj = board.registerNewObjective("dedsafio", Criteria.DUMMY,
+                    Component.text("DEDSAFIO", NamedTextColor.RED, TextDecoration.BOLD));
+            obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        }
+
+        // Top 10 vivos: solo se tocan las entradas que cambian (sin borrar el objetivo entero)
+        java.util.Set<String> top = new java.util.HashSet<>();
+        for (Stats s : stats.values().stream()
                 .filter(s -> s.alive)
                 .sorted(Comparator.comparingInt((Stats s) -> s.score).reversed())
                 .limit(10)
-                .forEach(s -> obj.getScore(s.name).setScore(s.score));
+                .toList()) {
+            top.add(s.name);
+            obj.getScore(s.name).setScore(s.score);
+        }
+        for (String old : new java.util.ArrayList<>(shown)) {
+            if (!top.contains(old)) board.resetScores(old);
+        }
+        shown.clear();
+        shown.addAll(top);
 
+        // Hermandades: crea el equipo si falta y mueve al jugador si cambio de hermandad
         for (Stats s : stats.values()) {
-            if (s.brotherhood == null) continue;
+            Team current = board.getEntryTeam(s.name);
+            if (s.brotherhood == null) {
+                if (current != null) current.removeEntry(s.name);
+                continue;
+            }
+            if (current != null && current.getName().equals(s.brotherhood)) continue;
+            if (current != null) current.removeEntry(s.name);
             Team t = board.getTeam(s.brotherhood);
             if (t == null) {
                 t = board.registerNewTeam(s.brotherhood);
                 t.prefix(Component.text("[" + s.brotherhood + "] ", NamedTextColor.AQUA));
             }
-            if (!t.hasEntry(s.name)) t.addEntry(s.name);
+            t.addEntry(s.name);
         }
     }
 }

@@ -1,0 +1,18 @@
+[Unit]
+Description=Servidor Dedsafio (Paper 26.3)
+Requires=minecraft.socket
+After=network.target
+
+[Service]
+User=minecraft
+WorkingDirectory=/opt/dedsafio
+Sockets=minecraft.socket
+StandardInput=socket
+StandardOutput=journal
+ExecStart=/opt/java25/bin/java -Xms4G -Xmx4G -XX:+UseG1GC -jar paper.jar --nogui
+ExecStop=/bin/sh -c 'echo stop > /run/minecraft.stdin'
+TimeoutStopSec=60
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
