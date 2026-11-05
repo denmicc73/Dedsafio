@@ -100,27 +100,66 @@ public final class RouletteManager implements Listener {
         }
     }
 
+    // ---------- animacion de la ruleta ----------
+
+    /** Giros pendientes: si caen varios cambios el mismo dia, se muestran uno detras de otro. */
+    private final java.util.ArrayDeque<String> queue = new java.util.ArrayDeque<>();
+    private boolean spinning;
+
     public void spinAndActivate(String id) {
         RouletteChange target = catalog.get(id);
         if (target == null) return;
-        List<RouletteChange> all = new ArrayList<>(catalog.values());
+        if (spinning) {
+            if (!queue.contains(id)) queue.add(id);
+            return;
+        }
+        spinning = true;
+        int steps = Math.max(8, plugin.getConfig().getInt("roulette.animation.spin-steps", 24));
+        int startDelay = Math.max(1, plugin.getConfig().getInt("roulette.animation.start-delay-ticks", 2));
+        int endDelay = Math.max(startDelay, plugin.getConfig().getInt("roulette.animation.end-delay-ticks", 14));
+        spinStep(target, new ArrayList<>(catalog.values()), 0, steps, startDelay, endDelay, null);
+    }
 
-        new BukkitRunnable() {
-            int step = 0;
+    /**
+     * Un "fotograma" de la ruleta. Cada paso espera mas que el anterior (frenada),
+     * el tono del sonido sube y el ultimo fotograma cae siempre en el cambio elegido.
+     */
+    private void spinStep(RouletteChange target, List<RouletteChange> all, int step, int steps,
+                          int startDelay, int endDelay, String lastId) {
+        boolean lastFrame = step == steps - 1;
+        double t = steps <= 1 ? 1.0 : step / (double) (steps - 1);
 
-            @Override
-            public void run() {
-                if (step < 12) {
-                    RouletteChange r = all.get(ThreadLocalRandom.current().nextInt(all.size()));
-                    showAll(r.name(), "", r.color(), 0, 10, 0);
-                    sound(Sound.UI_BUTTON_CLICK);
-                    step++;
-                } else {
-                    cancel();
-                    activate(target);
-                }
-            }
-        }.runTaskTimer(plugin, 0L, 5L);
+        RouletteChange shown = target;
+        if (!lastFrame && all.size() > 1) {
+            do {
+                shown = all.get(ThreadLocalRandom.current().nextInt(all.size()));
+            } while (shown.id().equals(lastId));
+        }
+
+        int delay = startDelay + (int) Math.round((endDelay - startDelay) * t * t);
+        showAll(shown.name(), lastFrame ? "\u25B6  \u25C0" : "\u00B7  \u00B7  \u00B7",
+                shown.color(), 0, delay + 2, 0);
+        sound(Sound.UI_BUTTON_CLICK, (float) (0.7 + 0.9 * t));
+
+        final String shownId = shown.id();
+        if (lastFrame) {
+            // pausa dramatica con el resultado en pantalla y luego revelacion
+            sound(Sound.ENTITY_PLAYER_LEVELUP, 0.8f);
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                activate(target);
+                // pequeno margen antes de la siguiente ruleta en cola
+                Bukkit.getScheduler().runTaskLater(plugin, this::finishSpin, 100L);
+            }, 20L);
+        } else {
+            Bukkit.getScheduler().runTaskLater(plugin,
+                    () -> spinStep(target, all, step + 1, steps, startDelay, endDelay, shownId), delay);
+        }
+    }
+
+    private void finishSpin() {
+        spinning = false;
+        String next = queue.poll();
+        if (next != null && !active.contains(next)) spinAndActivate(next);
     }
 
     public void activate(RouletteChange c) {
@@ -234,6 +273,10 @@ public final class RouletteManager implements Listener {
     }
 
     private void sound(Sound s) {
-        for (Player p : Bukkit.getOnlinePlayers()) p.playSound(p.getLocation(), s, 1f, 1f);
+        sound(s, 1f);
+    }
+
+    private void sound(Sound s, float pitch) {
+        for (Player p : Bukkit.getOnlinePlayers()) p.playSound(p.getLocation(), s, 1f, pitch);
     }
 }
