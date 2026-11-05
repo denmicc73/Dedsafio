@@ -1,0 +1,27 @@
+# Servidor de desarrollo rapido con Docker (imagen itzg/minecraft-server)
+# Uso:  docker compose up -d      |  logs: docker compose logs -f mc
+services:
+  mc:
+    image: itzg/minecraft-server:java21
+    container_name: dedsafio-dev
+    ports:
+      - "25565:25565"
+    environment:
+      EULA: "TRUE"               # al poner TRUE aceptas el EULA de Mojang
+      TYPE: "PAPER"
+      VERSION: "1.21.4"          # debe coincidir con paper-api en build.gradle.kts
+      MEMORY: "4G"
+      MOTD: "Dedsafio - servidor de desarrollo"
+      DIFFICULTY: "hard"
+      HARDCORE: "false"          # la muerte definitiva la gestiona el plugin
+      ENFORCE_WHITELIST: "TRUE"
+      ENABLE_WHITELIST: "TRUE"
+      OPS: "TU_NOMBRE_DE_MINECRAFT"
+      WHITELIST: "TU_NOMBRE_DE_MINECRAFT"
+    volumes:
+      - ./data:/data
+      # El .jar del plugin compilado se copia aqui:
+      - ../plugin/build/libs:/plugins:ro
+    stdin_open: true
+    tty: true
+    restart: unless-stopped

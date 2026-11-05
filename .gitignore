@@ -1,0 +1,6 @@
+plugin/build/
+plugin/.gradle/
+server/data/
+*.jar
+.idea/
+*.iml

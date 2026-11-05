@@ -1,0 +1,17 @@
+# Valores recomendados para un evento estilo Dedsafio. Copialo como server.properties
+difficulty=hard
+hardcore=false
+white-list=true
+enforce-whitelist=true
+pvp=true
+spawn-protection=0
+view-distance=10
+simulation-distance=8
+max-players=100
+motd=Dedsafio
+allow-flight=false
+enable-command-block=true
+# Resource pack propio (instrucciones, items). Sube el zip a un hosting con URL directa
+# resource-pack=https://TU_HOST/dedsafio-pack.zip
+# resource-pack-sha1=
+# require-resource-pack=true

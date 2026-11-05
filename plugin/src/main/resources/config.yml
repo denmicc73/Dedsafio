@@ -1,0 +1,48 @@
+# ===== DedsafioCore - configuracion =====
+# IMPORTANTE: las "changes" de abajo son EJEMPLOS inventados.
+# Sustituyelas por tu propia ruleta de dificultades.
+
+game:
+  auto-advance-minutes: 0      # 0 = avanzar dia a mano con /dedsafio day next
+  survival-day-points: 10      # puntos por dia sobrevivido
+
+death:
+  mode: SPECTATOR              # SPECTATOR | GULAG | ELIMINATE
+  penalty: -500                # puntos al morir (valor tomado de las estadisticas de fans)
+  kill-points: 50
+  lightning: true
+  # Si mode = GULAG: /dedsafio gulag setspawn guarda aqui la ubicacion
+
+roulette:
+  auto-activate-on-day: true
+
+# Tipos de efecto: DAMAGE_MULTIPLIER, MOB_HEALTH_MULTIPLIER, GAMERULE, POTION
+changes:
+  mobs_resistentes:
+    name: "Mobs Resistentes"
+    description: "Los monstruos aparecen con el doble de vida."
+    color: red
+    day: 2
+    effects:
+      - { type: MOB_HEALTH_MULTIPLIER, value: 2.0 }
+  golpes_dolorosos:
+    name: "Golpes Dolorosos"
+    description: "Los monstruos hacen un 50% mas de dano."
+    color: gold
+    day: 3
+    effects:
+      - { type: DAMAGE_MULTIPLIER, value: 1.5 }
+  sin_regeneracion:
+    name: "Sin Regeneracion"
+    description: "La vida ya no se regenera con la comida."
+    color: dark_red
+    day: 4
+    effects:
+      - { type: GAMERULE, rule: naturalRegeneration, value: false, revert: true }
+  lentitud_global:
+    name: "Piernas de Plomo"
+    description: "Todos reciben Lentitud durante 10 minutos."
+    color: gray
+    day: 0
+    effects:
+      - { type: POTION, effect: slowness, amplifier: 0, seconds: 600 }

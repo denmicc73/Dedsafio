@@ -1,0 +1,14 @@
+name: DedsafioCore
+version: 0.1.0
+main: dev.dedsafio.DedsafioPlugin
+api-version: '1.21'
+description: Mecanicas estilo Dedsafio (muerte definitiva, ruleta, gulag, puntuacion)
+commands:
+  dedsafio:
+    description: Panel de administracion de Dedsafio
+    usage: /dedsafio <start|stop|day|status|ruleta|revive|gulag|score|hermandad|instrucciones|reload>
+    permission: dedsafio.admin
+permissions:
+  dedsafio.admin:
+    description: Permite administrar el evento
+    default: op
